@@ -19,7 +19,7 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
   });
 
   // Thiết lập kích thước của biểu đồ
-  var margin = { top: 20, right: 30, bottom: 30, left: 40 },
+  var margin = { top: 20, right: 30, bottom: 100, left: 100 },
       width = 800 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
@@ -58,7 +58,8 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
       .attr("x", function(d) { return x(d.year) + x.bandwidth() / 4; })
       .attr("y", function(d) { return y(d.count); })
       .attr("width", x.bandwidth() / 2)
-      .attr("height", function(d) { return height - y(d.count); });
+      .attr("height", function(d) { return height - y(d.count); })
+      .attr("fill", 'orange');
 
   // Thêm label phía trên của mỗi cột
   svg.selectAll(".text")
@@ -71,6 +72,23 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
       .attr("text-anchor", "middle")
       .attr("font-size", "12px")
       .attr("fill", "black");
+
+      svg.append("text")
+      .attr("class", "axis-label")  // Optional class for styling
+      .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom - margin.bottom/2) +")")  // Position the label
+      .text("Năm")  // Set the label text
+      .style("text-anchor", "middle")  // Center align the text
+      .attr("font-size", "14px")  // Optional font size adjustment
+      .attr("fill", "black");  // Optional text color
+    
+      svg.append("text")
+      .attr("class", "axis-label")  // Optional class for styling
+      .attr("transform", "translate(" + (- margin.left/2) + " ," + (height / 2) + ")rotate(-90)")  // Position the label
+      .text("Số lượng người bị thương")  // Set the label text
+      .style("text-anchor", "middle")
+      .attr("font-size", "14px")
+      .attr("fill", "black");
+
 }).catch(function(error) {
   console.error("Error loading the data: " + error);
 });
