@@ -27,11 +27,11 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
   
     // Thiết lập kích thước của biểu đồ
     var margin = { top: 20, right: 30, bottom: 100, left: 100 };
-    var width = 800 - margin.left - margin.right;
+    var width = 1280 - margin.left - margin.right;
     var height = 400 - margin.top - margin.bottom;
   
     // Tạo một đối tượng SVG và thiết lập kích thước
-    var svg = d3.select("#chart2")
+    var svg = d3.select("#chart1")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -76,10 +76,26 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
     .enter().append("text")
     .attr("class", "label")
     .attr("x", function(d) { return x(d.collision) + x.bandwidth() / 2; })
-    .attr("y", function(d) { return y(d.count) - 15; })
+    .attr("y", function(d) { return y(d.count) - 5; })
     .text(function(d) { return d.count; })
     .attr("text-anchor", "middle")
     .attr("font-size", "12px")
+    .attr("fill", "black");
+
+    svg.append("text")
+    .attr("class", "axis-label")
+    .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom - margin.bottom/2) +")")  // Position the label
+    .text("Loại va chạm")
+    .style("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .attr("fill", "black");
+  
+    svg.append("text")
+    .attr("class", "axis-label")  // Optional class for styling
+    .attr("transform", "translate(" + (- margin.left/2) + " ," + (height / 2) + ")rotate(-90)")  // Position the label
+    .text("Số vụ tai nạn")  // Set the label text
+    .style("text-anchor", "middle")
+    .attr("font-size", "14px")
     .attr("fill", "black");
     
   }).catch(function(error) {

@@ -29,7 +29,7 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
   var height = 400 - margin.top - margin.bottom;
 
   // Tạo đối tượng svg để vẽ biểu đồ
-  var svg = d3.select("#chart1")
+  var svg = d3.select("#chart2")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -99,6 +99,24 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
     .attr("text-anchor", "middle")
     .attr("font-size", "12px")
     .attr("fill", "black");
+
+    svg.append("text")
+    .attr("class", "axis-label")
+    .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom - margin.bottom/2) +")")  // Position the label
+    .text("Năm")
+    .style("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .attr("fill", "black");
+  
+    svg.append("text")
+    .attr("class", "axis-label")  // Optional class for styling
+    .attr("transform", "translate(" + (- margin.left/2) + " ," + (height / 2) + ")rotate(-90)")  // Position the label
+    .text("Số vụ tai nạn hoặc số người bị thương")  // Set the label text
+    .style("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .attr("fill", "black");
+
+
 
 }).catch(function(error) {
   console.error("Error loading the data: " + error);
