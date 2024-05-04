@@ -1,5 +1,5 @@
 
-d3.csv("../assets/data/Art_in_Public_Places.csv").then(function(data) {
+d3.csv("./assets/data/Art_in_Public_Places.csv").then(function(data) {
   // Khúc này xử lý data, tùy theo yêu cầu mà viết hàm xử lý thui
   var countData = convertData(data)
 
