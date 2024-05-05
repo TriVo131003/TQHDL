@@ -103,7 +103,7 @@ d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
     svg.append("text")
     .attr("class", "axis-label")
     .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom - margin.bottom/2) +")")  // Position the label
-    .text("Năm")
+    .text("Thời gian")
     .style("text-anchor", "middle")
     .attr("font-size", "14px")
     .attr("fill", "black");
