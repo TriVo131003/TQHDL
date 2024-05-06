@@ -1,0 +1,55 @@
+.titleWrapper {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color:blue;
+}
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+#chart {
+  flex: 1;
+  margin-top: 50px;
+  margin-left: 450px;
+}
+#chart2 {
+  flex: 1;
+  margin-top: 100px;
+  margin-left: 300px;
+  margin-bottom: 30px;
+}
+
+.legendWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align legend items to the start */
+  margin-left: 20px; /* Add margin to the left side */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  margin-right: 20px;
+}
+
+.legend-text {
+  margin-right: 300px;
+}
+
+.chart1-label {
+  margin-top: 10px; /* Điều chỉnh margin-top để đặt phần chữ ở dưới biểu đồ */
+  margin-left: 700px; /* Điều chỉnh margin-left để căn phải với biểu đồ */
+  font-size: 18px;
+  margin-bottom: 20px /* Tuỳ chỉnh kích thước phông chữ */
+}
