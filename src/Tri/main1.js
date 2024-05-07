@@ -1,4 +1,4 @@
-d3.csv("./assets/data/Traffic_Accidents.csv").then(function(data) {
+d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
   // Lọc dữ liệu theo điều kiện Illumination Code = 1
   var filteredData = data.filter(function(d) {
       return d["Illumination Code"] === "1";
