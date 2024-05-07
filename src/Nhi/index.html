@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhi cute</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="chart"></div>
+  <div class="titleWrapper">
+    <span class="title">Biểu đồ so sánh số lượng tai nạn xe ở thành phố Nashville, Antioch và Old Hickory tháng 9/2021 </span>
+  </div>
+
+  <!-- Thêm một div mới để chứa biểu đồ thứ hai -->
+  <div class="container">
+    <div id="chart2"></div>
+    <!-- Di chuyển phần chú thích vào bên phải của biểu đồ tròn -->
+    <div class="legendWrapper">
+      <h4 style="margin-top: 100px;">Chú thích</h4>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:rgb(60, 130, 236);"></div>
+        <p class="legend-text">DAYLIGHT</p>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: orange;"></div>
+        <p class="legend-text">DARK - LIGHTED</p>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: green;"></div>
+        <p class="legend-text">DARK - NOT LIGHTED</p>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: grey;"></div>
+        <p class="legend-text">OTHERS</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="titleWrapper">
+    <span class="title">Báo cáo tỉ lệ xảy ra tai nạn giữa các buổi trong ngày</span>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
