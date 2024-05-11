@@ -1,120 +1,161 @@
-d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
-  // Khúc này xử lý data, tùy theo yêu cầu mà viết hàm xử lý thui
-  var countData = convertData1(data)
+d3.csv("../assets/data/Traffic_Accidents.csv")
+  .then(function (data) {
+    var parseDate = d3.timeParse("%m/%d/%Y %H:%M");
+    data.forEach(function (d) {
+      var date = parseDate(d["Date and Time"]);
+      d.date = date ? date : null;
+      d.year = date ? date.getFullYear() : null;
+    });
 
-  // Thiết lập kích thước của biểu đồ
-  var width = 340;
-  var height = 400;
-  var margin = {top: 20, right: 20, bottom: 60, left: 100};
+    var hitAndRunData = data.filter(
+      (d) => d.date !== null && d["Hit and Run"] === "TRUE"
+    );
 
-  // Tạo một đối tượng SVG và thiết lập kích thước
-  var svg = d3.select("#chart")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var nestedHitAndRunData = d3.group(hitAndRunData, (d) => d.year);
 
-  // Thiết lập scale cho trục x và y
-  var x = d3.scaleBand()
-    .domain(countData.map(function(d) { return d.weather; }))
-    .range([0, width])
-    .padding(0.1);
+    var flatHitAndRunData = Array.from(
+      nestedHitAndRunData,
+      ([year, entries]) => {
+        var cityData = { year: year };
+        entries.forEach((d) => {
+          var key = d["City"];
+          cityData[key] = (cityData[key] || 0) + 1;
+        });
+        return cityData;
+      }
+    );
 
-  var y = d3.scaleLinear()
-    .domain([0, d3.max(countData, function(d) { return d.count; })])
-    .nice()
-    .range([height, 0]);
+    var injuriesData = data.filter(
+      (d) => d.date !== null && !isNaN(d["Number of Injuries"])
+    );
 
-  // Tạo trục x và y
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x))
-    .append("text")
-    .attr("class", "xlabel")
-    .attr("x", width / 2)
-    .attr("y", margin.bottom-5)
-    .style("font-size", "16px")
-    .style("fill", "black")
-    .text("City");
+    var nestedInjuriesData = d3.group(injuriesData, (d) => d.year);
 
-  svg.append("g")
-    .call(d3.axisLeft(y))
-    .append("text")
-    .attr("class", "ylabel")
-    .attr("transform", "rotate(-90)")
-    .attr("y", -margin.left)
-    .attr("x", -height / 2)
-    .attr("dy", "1em")
-    .style("text-anchor", "middle")
-    .style("font-size", "16px")
-    .style("fill", "black")
-    .text("Number of Accidents");
+    var flatInjuriesData = Array.from(nestedInjuriesData, ([year, entries]) => {
+      return {
+        year: year,
+        injuries: d3.sum(entries, (d) => +d["Number of Injuries"]),
+      };
+    });
 
-    
+    // Sort data by year
+    flatHitAndRunData.sort((a, b) => a.year - b.year);
+    flatInjuriesData.sort((a, b) => a.year - b.year);
 
-  // Vẽ các cột
-  svg.selectAll(".bar")
-    .data(countData)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function(d) { return (x(d.weather) + x.bandwidth() / 4); })
-    .attr("y", function(d) { return y(d.count); })
-    .attr("width", x.bandwidth() - 50)
-    .attr("height", function(d) { return height - y(d.count); })
-    .attr('fill', 'orange'); // Chọn màu sắc cho từng cung
-  
-  // Thêm label phía trên của mỗi cột
-  svg.selectAll(".text")
-  .data(countData)
-  .enter().append("text")
-  .attr("class", "label")
-  .attr("x", function(d) { return x(d.weather) + x.bandwidth() / 2; })
-  .attr("y", function(d) { return y(d.count) - 5; }) // Dịch lên một chút để tránh chồng chéo
-  .text(function(d) { return d.count; })
-  .attr("text-anchor", "middle")
-  .attr("font-size", "12px")
-  .attr("fill", "black");
-}).catch(function(error) {
-  console.error("Error loading the data: " + error);
-});
+      // Set up dimensions
+      // Thiết lập kích thước của biểu đồ
+    var width = 500;
+    var height = 400;
+    var margin = {top: 50, right: 60, bottom: 20, left: 60};
+    // Create SVG
+    var svg = d3
+      .select("#chart")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    // Set up scales
+    var x = d3
+      .scaleBand()
+      .domain(flatHitAndRunData.map((d) => d.year))
+      .range([0, width])
+      .padding(0.1);
 
+    var y1 = d3.scaleLinear().domain([0, 14000]).nice().range([height, 0]);
 
-const convertData1 = (data) => {
-  // Tạo một đối tượng để lưu trữ số lượng sự cố cho từng loại thành phố
-  var countByCity = {};
+    var y2 = d3
+      .scaleLinear()
+      .domain([0, d3.max(flatInjuriesData, (d) => d.injuries)])
+      .nice()
+      .range([height, 0]);
 
-  // Tính số lượng sự cố cho từng loại thành phố
-  data.forEach(function(d) {
-    // Tách ngày, tháng và năm từ cột "Date and Time"
-    var dateParts = d["Date and Time"].split('/');
-    var month = parseInt(dateParts[0], 10); // Lấy tháng từ phần tử thứ nhất trong mảng
-    var day = parseInt(dateParts[1], 10); // Lấy ngày từ phần tử thứ hai trong mảng
-    var year = parseInt(dateParts[2], 10); // Lấy năm từ phần tử thứ ba trong mảng
-    var city = d["City"];
+    svg
+      .selectAll(".bar")
+      .data(flatHitAndRunData)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", (d) => x(d.year))
+      .attr("y", (d) => y1(d3.sum(Object.values(d)) - d.year))
+      .attr("width", x.bandwidth())
+      .attr("height", (d) => height - y1(d3.sum(Object.values(d)) - d.year))
+      .attr("fill", "green");
 
-    // Kiểm tra tháng, ngày và năm
-    if (month === 9 && year === 2021 && (city === "NASHVILLE" || city === "ANTIOCH" || city === "OLD HICKORY")) {
-      var key = city;
-      countByCity[key] = (countByCity[key] || 0) + 1;
-    }
+      
+
+    // Draw line for Number of Injuries data
+    var line = d3
+      .line()
+      .x((d) => x(d.year) + x.bandwidth() / 2)
+      .y((d) => y2(d.injuries));
+
+    svg
+      .append("path")
+      .datum(flatInjuriesData)
+      .attr("fill", "none")
+      .attr("stroke", "red")
+      .attr("stroke-width", 2)
+      .attr("d", line);
+
+    // Draw axes
+    svg
+      .append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+      .style("font-size", "15px");
+
+    svg
+      .append("g")
+      .call(d3.axisLeft(y1))
+      .attr("class", "axisSteelBlue")
+      .style("font-size", "15px");
+
+    svg
+      .append("g")
+      .call(d3.axisRight(y2))
+      .attr("class", "axisRed")
+      .attr("transform", "translate(" + width + ",0)")
+      .style("font-size", "15px");
+
+    // Add tooltip
+    d3.select("#chart")
+      .append("div")
+      .attr("id", "tooltip")
+      .style("opacity", 0)
+      .attr("class", "tooltip");
+
+    svg
+      .selectAll(".label")
+      .data(flatInjuriesData)
+      .enter()
+      .append("text")
+      .attr("class", "label")
+      .attr("x", (d) => x(d.year) + x.bandwidth() / 2)
+      .attr("y", (d) => y2(d.injuries) - 23)
+      .attr("text-anchor", "middle")
+      .attr("fill", "black")
+      .text((d) => d.injuries);
+    svg
+      .selectAll(".dot")
+      .data(flatInjuriesData)
+      .enter()
+      .append("circle")
+      .attr("class", "dot")
+      .attr("cx", (d) => x(d.year) + x.bandwidth() / 2)
+      .attr("cy", (d) => y2(d.injuries))
+      .attr("r", 5)
+      .attr("fill", "red");
+  })
+  .catch(function (error) {
+    console.error("Error loading the data: " + error);
   });
-
-  // Chuyển đổi đối tượng thành mảng các đối tượng [{: key, count: value}]
-  var countData = Object.keys(countByCity).map(function(key) {
-    return { weather: key, count: countByCity[key] };
-  });
-
-  return countData
-}
-
-
 
 // Biểu đồ tròn nè keo
 
 
-
+//////////////////////////
 
 d3.csv("../assets/data/Traffic_Accidents.csv").then(function(data) {
   // Xử lý dữ liệu ở đây
